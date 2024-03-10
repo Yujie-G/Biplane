@@ -2,16 +2,16 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from mmcv.cnn import constant_init
-from mmcv.ops import ModulatedDeformConv2d, modulated_deform_conv2d
-from mmcv.runner import load_checkpoint
+from PIL import Image
+# from mmcv.cnn import constant_init
+# from mmcv.ops import ModulatedDeformConv2d, modulated_deform_conv2d
+# from mmcv.runner import load_checkpoint
 
 from mmedit.models.backbones.sr_backbones.basicvsr_net import (
     ResidualBlocksWithInputConv, SPyNet)
 
 spynet_pretrained = 'https://download.openmmlab.com/mmediting/restorers/basicvsr/spynet_20210409-c6c1bd09.pth'
 spynet = SPyNet(pretrained=spynet_pretrained) # 5MB
-is_mirror_extended = None
 def compute_flow(lqs):
     """Compute optical flow using SPyNet for feature alignment.
 
@@ -35,6 +35,7 @@ def compute_flow(lqs):
 
     flows_backward = spynet(lqs_1, lqs_2).view(n, t - 1, 2, h, w)
 
+    is_mirror_extended = True
     if is_mirror_extended:  # flows_forward = flows_backward.flip(1)
         flows_forward = None
     else:
@@ -54,26 +55,48 @@ def vis_flow(optical_flow, save_path):
     # Move tensor to cpu and convert it to numpy array.
     optical_flow = optical_flow.cpu().data.numpy()
 
-    # Calculate magnitude and angle of 2D vectors
-    magnitude, angle = cv2.cartToPolar(optical_flow[..., 0], optical_flow[..., 1])
+    normalized_optical_flow = np.zeros_like(optical_flow)
+    for i in range(optical_flow.shape[0]):
+        min_val = np.min(optical_flow[i, :, :])
+        max_val = np.max(optical_flow[i, :, :])
 
-    # Normalize magnitude
-    magnitude = cv2.normalize(magnitude, None, 0, 255, cv2.NORM_MINMAX)
+        normalized_optical_flow[i, :, :] = (optical_flow[i, :, :] - min_val) / (max_val - min_val)
 
-    # Encode HSV image
-    hsv = np.zeros((optical_flow.shape[0], optical_flow.shape[1], 3), dtype=np.float32)
-    hsv[..., 0] = angle * 180 / np.pi / 2
-    hsv[..., 1] = 255
-    hsv[..., 2] = magnitude
+        # 使用线性变换,将数据从(0,1)映射到(-1,1)，即：2*(x-0.5)
+        normalized_optical_flow[i, :, :] = 2.0*(normalized_optical_flow[i, :, :] - 0.5)
+    
+    # map the w*h matrix M to the RGB color space, M[i, j] = picture[i, j]'s color
+    def vector_to_rgb(input_matrix, img_path):
+        """
+            input matrix: (2, n, n)
+        """
+        img = Image.open(img_path)
+        img_data = np.array(img)
+        width, height = img_data.shape[0], img_data.shape[1]
+        # print(img_data.shape)
+        rgb_data = np.zeros((3, input_matrix.shape[1], input_matrix.shape[2]))
+        
+        pos = input_matrix.transpose((1, 2, 0))
+        pos = np.clip((pos + 1) * 0.5, 0, 1)
+        pos[:, :, 0] *= width - 1
+        pos[:, :, 1] *= height - 1
+        pos = pos.astype(int)
+        rgb_data = img_data[pos[:, :, 0], pos[:, :, 1], :3].astype(np.uint8)
+        return rgb_data
 
-    # Convert HSV to BGR (for visualization)
-    bgr = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+    rgb_data = vector_to_rgb(normalized_optical_flow, 'assets/flow-field.png')
 
     # Save the figure
-    plt.imshow(bgr)
+    plt.imshow(rgb_data)
     plt.axis('off')
     plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
 
 
-if __name__=='__main__':
-    pass
+if __name__ == '__main__':
+    # Test the optical flow computation
+    lqs = torch.randn(1, 5, 3, 128, 128) # shape (n, t, c, h, w).
+    _, flows= compute_flow(lqs)
+    print(flows.shape) # (n, t - 1, 2, h, w)
+    vis_flow(flows[0, 0], 'flow_forward.png')
+    # vis_flow(flows_backward[0, 0], 'flow_backward.png')
+    print('Optical flow computation test passed!')
