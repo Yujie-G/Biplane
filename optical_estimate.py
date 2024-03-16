@@ -11,7 +11,7 @@ from mmedit.models.backbones.sr_backbones.basicvsr_net import (
     ResidualBlocksWithInputConv, SPyNet)
 
 spynet_pretrained = 'https://download.openmmlab.com/mmediting/restorers/basicvsr/spynet_20210409-c6c1bd09.pth'
-spynet = SPyNet(pretrained=spynet_pretrained) # 5MB
+spynet = SPyNet(pretrained=spynet_pretrained).to('cuda') # 5MB
 def compute_flow(lqs):
     """Compute optical flow using SPyNet for feature alignment.
 
