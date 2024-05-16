@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<scene version="0.6.0">
+	<integrator type="path">
+		<integer name="integrationType" value="2"/>
+		<integer name="maxDepth" value="2"/>
+	</integrator>
+
+	<sensor type="perspective">
+		<float name="nearClip" value="0.1"/>
+		<float name="farClip" value="100"/>
+		<float name="fov" value="30"/>
+
+		<transform name="toWorld">
+			<scale x="1." y="1."/>
+			<lookat origin="0 0 -3" up="0, 1, 0" target="0, 0, 0.3"/>
+		</transform>
+
+		<sampler type="ldsampler">
+			<integer name="sampleCount" value="4"/>
+			<integer name="seed" value="0"/>
+		</sampler>
+
+		<film type="hdrfilm">
+			<string name="pixelFormat" value="rgb"/>
+			<boolean name="banner" value="false"/>
+			<integer name="height" value="512"/>
+			<integer name="width" value="512"/>
+
+			<rfilter type="box"/>
+		</film>
+	</sensor>
+
+	<emitter type="point" id="pointlight">
+		<transform name="toWorld">
+			<translate x="0" z="-3" y="0"/>
+		</transform>
+		<spectrum name="intensity" value="100"/>
+	</emitter>
+
+	<!-- <bsdf type="decoder_gaussian" id="dummy">  
+		<integer name="bsdfIndex" value="0"/>
+		<float name="sigma" value="0.0"/>
+		<float name="amp" value="0.0"/>
+	</bsdf> -->
+
+	<bsdf type="decoder_gaussian" id="dummy">
+		<integer name="index" value="0"/>
+		<string name="checkpointPath" value="/root/autodl-tmp/torch/saved_model/#compress_only-offset_depth-datagen_rock-tmp-epoch-30-1222_165150/epoch-50/epoch-50.pth"/>
+		<float name="sigma" value="0.0"/>
+		<float name="amp" value="0.0"/>
+	</bsdf>
+
+	<!-- <bsdf type="ubo2014_bsdfList_randomdirection" id="ubo">  
+		<boolean name="useTriangulation" value="true"/>
+		<string name="ubo_path" value="/test/data/UBO2014/BTF/carpet12_W400xH400_L151xV151.btf"/>
+		<integer name="available_texels_u" value="400"/>
+		<integer name="available_texels_v" value="400"/>
+		<integer name="offset_texels_u" value="0"/>
+		<integer name="offset_texels_v" value="0"/>
+		<integer name="u_interval" value="1"/>
+		<integer name="v_interval" value="1"/>
+		<string name="interpType" value="bilinear"/>
+	</bsdf> -->
+	
+	<shape type="rectangle">
+		<transform name="toWorld">
+			<rotate x="1" angle="180"/>
+		</transform>
+		<boolean name="flipNormals" value="false"/>
+		<ref id="dummy"/>
+<!--		<ref id="ubo"/>-->
+	</shape>
+
+<!--	<shape type="heightfield">-->
+<!--		<transform name="toWorld">-->
+<!--			<translate x="0" y="0" z="0"/>-->
+<!--			<scale x="1.666" y="1.666" z="1"/>-->
+<!--			<rotate x="1" angle="180"/>-->
+<!--		</transform>-->
+
+<!--		<bsdf type="normalmap">-->
+<!--			<bsdf type="roughplastic">-->
+<!--				&lt;!&ndash; <texture name="alpha" type="bitmap">-->
+<!--					<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/mitsuba0.6-tensorNLB/scene/neumip_materials/taurillon_leather_regular_worn_roughness.png"/>-->
+<!--					<string name="filterType" value="bilinear"/>-->
+<!--					<float name="gamma" value="2.2"/>-->
+<!--				</texture> &ndash;&gt;-->
+<!--				<float name="alpha" value="0.1"/>-->
+<!--				<string name="distribution" value="ggx"/>-->
+<!--				<texture name="diffuseReflectance" type="bitmap">-->
+<!--					<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/mitsuba0.6-tensorNLB/scene/neumip_materials/taurillon_leather_regular_worn_basecolor_rgb.png"/>-->
+<!--					<string name="filterType" value="bilinear"/>-->
+<!--					&lt;!&ndash; <float name="uvscale" value="0.6"/>-->
+<!--					<float name="uvoffset" value="0.2"/> &ndash;&gt;-->
+<!--					<float name="gamma" value="2.2"/>-->
+<!--				</texture>-->
+<!--			</bsdf>-->
+<!--			&lt;!&ndash; <bsdf type="ubo2014_bsdfList_randomdirection" id="ubo">  -->
+<!--				<boolean name="useTriangulation" value="true"/>-->
+<!--				<string name="ubo_path" value="/test/data/UBO2014/BTF/wood07_W400xH400_L151xV151.btf"/>-->
+<!--				<integer name="available_texels_u" value="400"/>-->
+<!--				<integer name="available_texels_v" value="400"/>-->
+<!--				<integer name="offset_texels_u" value="0"/>-->
+<!--				<integer name="offset_texels_v" value="0"/>-->
+<!--				<integer name="u_interval" value="1"/>-->
+<!--				<integer name="v_interval" value="1"/>-->
+<!--				<string name="interpType" value="bilinear"/>-->
+<!--			</bsdf> &ndash;&gt;-->
+<!--			&lt;!&ndash; <bsdf type="diffuse"/> &ndash;&gt;-->
+<!--			<texture type="bitmap">-->
+<!--				<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/mitsuba0.6-tensorNLB/scene/neumip_materials/taurillon_leather_regular_worn_normal.png"/>-->
+<!--				<string name="filterType" value="bilinear"/>-->
+<!--				&lt;!&ndash; <float name="uvscale" value="0.6"/>-->
+<!--				<float name="uvoffset" value="0.2"/> &ndash;&gt;-->
+<!--				<float name="gamma" value="1.0"/>-->
+<!--			</texture>-->
+<!--		</bsdf>-->
+<!--		-->
+<!--		<texture type="bitmap" id="displacement">-->
+<!--			<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/mitsuba0.6-tensorNLB/scene/neumip_materials/taurillon_leather_regular_worn_height.png"/>-->
+<!--			<string name="filterType" value="bilinear"/>-->
+<!--			<float name="gamma" value="2.2"/>-->
+<!--		</texture>-->
+<!--		<float name="scale" value="0"/>-->
+<!--	</shape>-->
+
+</scene>

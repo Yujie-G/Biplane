@@ -1,0 +1,44 @@
+<!-- cloth.obj and scene from https://github.com/elerac/btf-rendering/tree/master/scenes/cloth -->
+<scene version="0.6.0">
+	<integrator type="path"/>
+
+	<sensor type="perspective">
+		<sampler type="independent">
+			<integer name="sampleCount" value="64"/>
+		</sampler>
+
+		<transform name="toWorld">
+			<lookat origin="5.3, 3, 5.6" target="0, 0.2, 1.2" up="0, 1, 0"/>
+		</transform>
+		
+		<film type="hdrfilm">
+			<integer name="width"  value="720"/>
+			<integer name="height" value="480"/>
+		</film>
+	</sensor>
+	
+	<emitter type="envmap">
+		<!-- https://hdrihaven.com/files/hdris/skylit_garage_1k.hdr -->
+		<string name="filename" value="envmaps/skylit_garage_1k.hdr"/>
+	</emitter>
+	
+	<shape type="obj">
+		
+		<string name="filename" value="meshes/cloth.obj"/>
+		
+		<bsdf type="decoder_gaussian" id="dummy">
+			<integer name="index" value="0"/>
+			<string name="checkpointPath" value="/lizixuan/Biplane/torch/saved_model/#compress_only-offset_depth-ubo2014original_leather11-Biplane-decoder1207-epoch-60-0515_094424/epoch-50/epoch-50.pth"/>
+			<float name="sigma" value="0.0"/>
+			<float name="amp" value="0.0"/>
+		</bsdf>
+	</shape>
+
+	<shape type="rectangle">
+		<transform name="toWorld">
+			<rotate  x="1" angle="-90"/>
+        	<scale value="5"/>
+		</transform>
+	</shape>
+
+</scene>
