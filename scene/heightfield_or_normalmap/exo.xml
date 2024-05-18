@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<scene version="0.6.0">
+
+	<integrator type="volpath">
+		<!-- <vector name="wi" x="$wix" y="$wiy" z="1"/>
+		<vector name="wo" x="$wix" y="$wiy" z="1"/>
+		<float name="u" value="-2"/>
+		<float name="v" value="-2"/> -->
+		<float name="u" value="-1"/>
+		<float name="v" value="-1"/>
+		<float name="rX" value="5"/>
+		<float name="rY" value="5"/>
+	</integrator>
+
+	<sensor type="orthographic">
+		<float name="nearClip" value="0.1"/>
+		<float name="farClip" value="100"/>
+
+		<transform name="toWorld">
+			<scale x="5" y="5"/>
+			<!-- <lookat origin="-20 -20 -0.1" up="0, -1, 0" target="0, 0, 0"/> -->
+			<lookat origin="0 0 -10" up="0, -1, 0" target="0, 0, 0"/>
+		</transform>
+
+		<sampler type="ldsampler">
+			<integer name="sampleCount" value="1"/>
+			<integer name="seed" value="$seed"/>
+		</sampler>
+
+		<film type="hdrfilm">
+			<boolean name="banner" value="false"/>
+			<integer name="height" value="400"/>
+			<integer name="width" value="400"/>
+
+			<rfilter type="box"/>
+		</film>
+	</sensor>
+
+	<emitter type="directional">
+		<vector name="direction" x="0" y="0" z="1"/>
+		<spectrum name="irradiance" value="3.14"/>
+	</emitter>
+	
+	<shape type="heightfield">
+		<transform name="toWorld">
+			<scale x="5" y="5" z="1"/>
+			<rotate x="1" angle="180"/>
+			<translate x="0" y="0" z="0.00001"/>
+		</transform>
+		
+		<!-- <bsdf type="roughconductorApprox_exo" id="cloth">
+			<texture name="alpha" type="bitmap">
+				<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/data/fan/silk_mannual_plastic_1x2_390625/roughness.exr"/>
+				<string name="filterType" value="bilinear"/>
+				<float name="gamma" value="1.0"/>
+				<float name="uscale" value="25"/>
+				<float name="vscale" value="25"/>
+			</texture>
+			<string name="distribution" value="ggx"/>
+			<texture name="R0" type="bitmap">
+				<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/data/fan/silk_mannual_plastic_1x2_390625/diffuse_0.exr"/>
+				<string name="filterType" value="bilinear"/>
+				<float name="gamma" value="1.0"/>
+				<float name="uscale" value="25"/>
+				<float name="vscale" value="25"/>
+			</texture>
+			<texture name="R0_1" type="bitmap">
+				<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/data/fan/silk_mannual_plastic_1x2_390625/diffuse_1.exr"/>
+				<string name="filterType" value="bilinear"/>
+				<float name="gamma" value="1.0"/>
+				<float name="uscale" value="25"/>
+				<float name="vscale" value="25"/>
+			</texture>
+		</bsdf> -->
+
+		<bsdf type="diffuse_exo" id="cloth">
+			<texture name="reflectance" type="bitmap">
+				<!-- <string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/data/fan/silk_mannual_plastic_1x2_390625/diffuse_0.exr"/> -->
+				<string name="filename" value="/root/autodl-tmp/data/mat_svbrdf/Bark_r.exr"/>
+				<string name="filterType" value="bilinear"/>
+				<float name="gamma" value="1.0"/>
+				<float name="uscale" value="25"/>
+				<float name="vscale" value="25"/>
+			</texture>
+			<spectrum name="reflectance_1" value="0.8 0.08 0.47"/>
+		</bsdf>
+		
+		<texture type="bitmap" id="displacement">
+			<!-- <string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/mitsuba0.6-tensorNLB/scene/neumip_materials/beaded_sbai_fabric_height.png"/> -->
+			<string name="filename" value="/root/autodl-tmp/data/mat_svbrdf/Bark_Height.png"/>
+			
+			<string name="filterType" value="bilinear"/>
+			<float name="gamma" value="2.2"/>
+		</texture>
+		<float name="scale" value="0"/>
+	</shape>
+	
+	<!-- <shape type="rectangle" id="ref_plane">
+		<transform name="toWorld">
+			<rotate x="1" angle="180"/>
+			<scale x="8.5" y="8.5" z="1"/>
+		</transform>
+		<bsdf type="mask">
+			<bsdf type="diffuse"/>
+			<texture name="opacity" type="bitmap">
+				<string name="filename" value="/test/repositories/mitsuba-pytorch-tensorNLB/capture_code_Yu/opacity1.png"/>
+				<string name="channel" value="r"/>
+			</texture>
+		</bsdf>
+	</shape> -->
+
+</scene>
