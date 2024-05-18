@@ -1,205 +1,101 @@
 from datetime import datetime
 import os
+import yaml
 
-from utils import pr
+from lib.config.base_config import BaseConfig
+
 
 ## to avoid cuda fork() error
 # from multiprocessing import set_start_method
 # set_start_method('spawn')
 
-class BaseConfig():
-
-    def print_to_screen(self, offset=0):
-        lines = []
-        term_width = os.get_terminal_size().columns - offset
-        left_width = min(max([len(k) for k in vars(self).keys()]) + 2, term_width // 3)
-        right_width = term_width - left_width
-        lines.append('='*term_width)
-        lines.append(f'[{self.__class__.__name__}]')
-        lines.append('-'*term_width)
-        if hasattr(self, "comments"):
-            if len(self.comments) > right_width:
-                comments = self.comments[:right_width // 2] + '...' + self.comments[-right_width + 4:]
-            else:
-                comments = self.comments
-            lines.append(f'{"comments":<{left_width}} {comments}')
-        for k,v in vars(self).items():
-            if k in ['data_root', 'network', 'trainer', 'save_root', 'decom_params']:
-                lines.append('-'*term_width)
-            if k not in ['comments', 'other_info']:
-                if len(k) > left_width:
-                    k = k[:left_width // 2 - 4] + '...' + k[-left_width // 2:]
-                if len(str(v)) > right_width:
-                    v = str(v)[:right_width // 2] + '...' + str(v)[-right_width // 2 + 4:]
-                lines.append(f'{k:<{left_width}} {v}')
-        lines.append('='*term_width)
-        pr('\n'.join(lines))
-        return lines
-    
-    def to_lines(self):
-        lines = []
-        lines.append('='*80)
-        lines.append(f'[{self.__class__.__name__}]')
-        lines.append('-'*80)
-        if hasattr(self, "comments"):
-            lines.append(f'{"comments":<30} {self.comments}')
-        for k,v in vars(self).items():
-            if k in ['data_root', 'network', 'trainer', 'save_root', 'decoder_params']:
-                lines.append('')
-            if k not in ['comments', 'other_info']:
-                lines.append(f'{k:<30} {v}')
-        lines.append('='*80)
-        return lines
-        
-    def __repr__(self) -> str:
-        string = ''
-        for line in self.to_lines():
-            string += line + '\n'
-        return string
-        
 class RepConfig(BaseConfig):
+    def __init__(self, device, global_random_seed, config_file):
+        with open(config_file, 'r') as file:
+            config = yaml.safe_load(file)
 
-    def __init__(self, device, global_random_seed):
-
-        self.other_info = 'offset_depth'
-        self.start_time = datetime.now().strftime(r'%m%d_%H%M%S')
-        self.random_seed = global_random_seed
         self.device = device
-        self.root = '/root/pytorch-tensorNLB-master/'
+        self.global_random_seed = global_random_seed
+
+        self.other_info = config['other_info']
+        self.start_time = datetime.now().strftime(r'%m%d_%H%M%S')
+        self.root = config['root']
+
 
         ## data config
-        self.data_root = {
-            'ubo2014':          '/data/mitsuba-pytorch-tensorNLB/ubo2014_resampled_allrandom/',
-            'ubo2014original':  '/lizixuan/Biplane/UBO2014BTF/ubo2014_resampled_allrandom',
-            'neumip':           'data/neumip_data/',
-            'heightfield':      'data/heightfield/',
-            'normalmap':        'data/normalmap/',
-            'datagen':          '/root/autodl-tmp/data/datagen/',
-            'render':           'data/collocated_render/',
-            'uita':             '/data/mitsuba-pytorch-tensorNLB/uita_btf_database/',
-            'autoclose':        'data/collocated_auto_close/',
-            'default':          '/lizixuan/Biplane/UBO2014BTF/ubo2014_resampled_allrandom',
-        }
-        self.train_dataset = 'TrainDataset_allrandom'
-        self.btf_size = [400, 400] 
-        self.cache_file_shape = [400, 400, 400, 9]
-        self.train_materials = [
-            # 'ubo2014_stone03',
-            # 'datagen_rock0302',
-            # 'neumip_insulation_foam',
-            # 'keyboard_selected',
-            # 'heightfield_rock2',
-            # 'normalmap_silk_512',
-            # 'render_rock2_scale0.6',
-            'ubo2014original_wallpaper05',
-            # *[f'ubo2014original_carpet{i:02d}' for i in range(1, 13)],
-            # *[f'ubo2014original_fabric{i:02d}' for i in range(1, 13)],
-            # *[f'ubo2014original_felt{i:02d}' for i in range(1, 13)],
-            # *[f'ubo2014original_leather{i:02d}' for i in range(1, 13)],
-            # *[f'ubo2014original_stone{i:02d}' for i in range(1, 13)],
-            # *[f'ubo2014original_wallpaper{i:02d}' for i in range(1, 13)],
-            # *[f'ubo2014original_wood{i:02d}' for i in range(1, 13)],
-        ]
+        self.data_root = config['data_root']
+        self.train_dataset = config['train_dataset']
+        self.btf_size = config['btf_size']
+        self.cache_file_shape = config['cache_file_shape']
+        self.train_materials = config['train_materials']
 
         ## model config
-        self.network = 'Decoder'
-        self.decom = 'DualBiPlane'
-        self.adapter = 'Adapter'
-        self.offset = None # 'Offset'
-        self.normalmap = None #'NormalMap'
         self.reacitvate_trainale_layers = False
-        self.query_size = 2
-        self.greyscale = False
-        self.latent_size = [6, 6, 6]
-        self.decom_H_reso = 20
-        
+        self.network = config['network']
+        self.decom = config['decom']
+        self.adapter = config['adapter']
+        self.offset = config['offset']
+        self.normalmap = config['normalmap']
+        self.reactivate_trainable_layers = config['reactivate_trainable_layers']
+        self.query_size = config['query_size']
+        self.greyscale = config['greyscale']
+        self.latent_size = config['latent_size']
+        self.decom_H_reso = config['decom_H_reso']
+
         ## training config
-        self.trainer = 'Trainer'
-        self.batch_size = 4
-        self.random_drop_queries = 8
+        self.trainer = config['trainer']
+        self.batch_size = config['batch_size']
+        self.random_drop_queries = config['random_drop_queries']
         self.num_workers = min(self.batch_size * 2, os.cpu_count())
-        self.lr = [1e-3, 3e-4, 0, 0, 0, 0] ## decom network adapter offset_tex offset_network normalmap
-        self.lr_decay_param = 0.9
-        self.lr_decay_epoch = 1
-        self.start_radius = 0
-        self.radius_decay = 0
-        self.max_epochs = 40
-        self.validate_epoch = 5
-        self.change_parameters_epoch = None
-        
+        self.lr = config['lr']
+        self.lr_decay_param = config['lr_decay_param']
+        self.lr_decay_epoch = config['lr_decay_epoch']
+        self.start_radius = config['start_radius']
+        self.radius_decay = config['radius_decay']
+        self.max_epochs = config['max_epochs']
+        self.validate_epoch = config['validate_epoch']
+        self.change_parameters_epoch = config['change_parameters_epoch']
+
         ## checkpoint config
-        self.save_root = '/lizixuan/Biplane/torch/saved_model'
-        self.log_file = self.save_model = True
-        self.compress_only = True
-        self.continue_training = True
-        if self.compress_only:
-            self.batch_size = 8
-            self.random_drop_queries = None
-            self.num_workers = min(self.batch_size * 2, os.cpu_count())
-            self.start_radius = 20
-            self.radius_decay = 0.75
-            self.use_hxy_comb = True
-            self.lr = [1e-2, 0, 1e-2, 1e-2, 3e-3, 1e-2]
-            self.lr_decay_param = 0.85
-            self.max_epochs = 50
-            self.lr_decay_epoch = 1
-            self.change_parameters_epoch = 35
-            self.validate_epoch = -1
-        # self.checkpoint_path = '/test/repositories/mitsuba-pytorch-tensorNLB/torch/saved_model/#D6-Decoder-DualTriPlane-H20^2_L12-400x400x400[1x1]_84BTFs-1110_113917/epoch-30/epoch-30.pth'
-        self.checkpoint_path = '/lizixuan/Biplane/model/decoder1207-epoch-60.pth'
+        self.save_root = config['save_root']
+        self.log_file = config['log_file']
+        self.save_model = config['save_model']
+        self.compress_only = config['compress_only']
+        self.continue_training = config['continue_training']
+        self.checkpoint_path = config['checkpoint_path']
+        self.use_hxy_comb = config['use_hxy_comb']
 
-        import model
-        # self.dummy_decom = getattr(model, self.decom)(self)
-        # self.decom_params = self.dummy_decom.get_param_count()
-        # self.dummy_model = getattr(model, self.network)(self)
-        # self.decoder_params = self.dummy_model.get_param_count()
-        # del self.dummy_decom, self.dummy_model
-        # if self.adapter:
-        #     self.dummy_adapter = getattr(model, self.adapter)(self)
-        #     self.adapter_params = self.dummy_adapter.get_param_count()
-        #     del self.dummy_adapter
-        # if self.offset:
-        #     self.dummy_offset = getattr(model, self.offset)(self)
-        #     self.offset_params = self.dummy_offset.get_param_count()
-        #     del self.dummy_offset
-        # if self.normalmap:
-        #     self.dummy_normalmap = getattr(model, self.normalmap)(self)
-        #     self.normalmap_params = self.dummy_normalmap.get_param_count()
-        #     del self.dummy_normalmap
-
-
-        
         self.gen_comment()
 
     def gen_comment(self):
-
         ## other info
         self.comments = self.other_info
         if self.compress_only:
-            self.comments = 'compress_only' + ('-' if self.other_info else '') + self.other_info
+            self.comments = 'compress_only' + (f'-{self.other_info}' if self.other_info else '')
             ## data name
             if len(self.train_materials) < 3:
                 self.comments += f'-{"_".join(self.train_materials)}'
             return
-
         ## model name / structure
         # self.comments += f'-{self.network}-{self.decom}'
-        
+
         ## latent structure
         self.comments += f'-H{self.decom_H_reso}^2_L{self.latent_size[0]}+{self.latent_size[1]}'
-        
+
         ## data name
         if len(self.train_materials) < 3:
             self.comments += f'-{"_".join(self.train_materials)}'
 
         ## training settings
         # self.comments += f'-bs{self.batch_size}'
-        
+
         ## dataset
         self.comments += f'-{self.cache_file_shape[0]}x{len(self.train_materials)}BTF' + ('s' if len(self.train_materials) > 1 else '')
-        
+
 if __name__ == '__main__':
             
-    config = RepConfig('cuda:0', 0)
+    # config = RepConfig('cuda:0', 0)
+    config = RepConfig('cuda:0', 0, os.path.join('lib', 'config', 'train.yaml'))
     config.print_to_screen()
+
     

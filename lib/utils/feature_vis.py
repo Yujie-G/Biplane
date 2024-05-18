@@ -54,7 +54,7 @@ def write_blocks(tensor: np.ndarray, out_path):
                 
             res[m*(H+1) : (m+1)*(H+1)-1, n*(W+1) : (n+1) * (W+1)-1] = buf
             
-    if os.path.dirname(out_path) is not '':
+    if os.path.dirname(out_path) != '':
         os.system(f'mkdir -p {os.path.dirname(out_path)}')
     exr.write(res, out_path)
     if __name__ == '__main__':

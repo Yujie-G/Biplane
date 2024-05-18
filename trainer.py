@@ -13,7 +13,7 @@ import model
 from lib.utils import exr
 from utils import inplace_relu, trainable_layer, optimizer_to, time_change, print
 from config import RepConfig
-from render import render
+from render_scripts.render_buffer import render
 
 class BaseTrainer:
 

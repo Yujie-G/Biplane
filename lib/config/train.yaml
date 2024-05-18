@@ -1,0 +1,142 @@
+other_info: null
+root: Biplane
+
+data_root:
+  ubo2014: /data/mitsuba-pytorch-tensorNLB/ubo2014_resampled_allrandom/
+  ubo2014original: /lizixuan/Biplane/UBO2014BTF/ubo2014_resampled_allrandom
+  neumip: data/neumip_data/
+  heightfield: data/heightfield/
+  normalmap: data/normalmap/
+  datagen: /root/autodl-tmp/data/datagen/
+  render: data/collocated_render/
+  uita: /data/mitsuba-pytorch-tensorNLB/uita_btf_database/
+  autoclose: data/collocated_auto_close/
+  default: /lizixuan/Biplane/UBO2014BTF/ubo2014_resampled_allrandom
+
+train_dataset: TrainDataset_allrandom
+btf_size: [400, 400]
+cache_file_shape: [400, 400, 400, 9]
+train_materials:
+  - ubo2014original_carpet01
+  - ubo2014original_carpet02
+  - ubo2014original_carpet03
+  - ubo2014original_carpet04
+  - ubo2014original_carpet05
+  - ubo2014original_carpet06
+  - ubo2014original_carpet07
+  - ubo2014original_carpet08
+  - ubo2014original_carpet09
+  - ubo2014original_carpet10
+  - ubo2014original_carpet11
+  - ubo2014original_carpet12
+  - ubo2014original_carpet13
+  - ubo2014original_fabric01
+  - ubo2014original_fabric02
+  - ubo2014original_fabric03
+  - ubo2014original_fabric04
+  - ubo2014original_fabric05
+  - ubo2014original_fabric06
+  - ubo2014original_fabric07
+  - ubo2014original_fabric08
+  - ubo2014original_fabric09
+  - ubo2014original_fabric10
+  - ubo2014original_fabric11
+  - ubo2014original_fabric12
+  - ubo2014original_fabric13
+  - ubo2014original_felt01
+  - ubo2014original_felt02
+  - ubo2014original_felt03
+  - ubo2014original_felt04
+  - ubo2014original_felt05
+  - ubo2014original_felt06
+  - ubo2014original_felt07
+  - ubo2014original_felt08
+  - ubo2014original_felt09
+  - ubo2014original_felt10
+  - ubo2014original_felt11
+  - ubo2014original_felt12
+  - ubo2014original_felt13
+  - ubo2014original_leather01
+  - ubo2014original_leather02
+  - ubo2014original_leather03
+  - ubo2014original_leather04
+  - ubo2014original_leather05
+  - ubo2014original_leather06
+  - ubo2014original_leather07
+  - ubo2014original_leather08
+  - ubo2014original_leather09
+  - ubo2014original_leather10
+  - ubo2014original_leather11
+  - ubo2014original_leather12
+  - ubo2014original_leather13
+  - ubo2014original_stone01
+  - ubo2014original_stone02
+  - ubo2014original_stone03
+  - ubo2014original_stone04
+  - ubo2014original_stone05
+  - ubo2014original_stone06
+  - ubo2014original_stone07
+  - ubo2014original_stone08
+  - ubo2014original_stone09
+  - ubo2014original_stone10
+  - ubo2014original_stone11
+  - ubo2014original_stone12
+  - ubo2014original_stone13
+  - ubo2014original_wallpaper01
+  - ubo2014original_wallpaper02
+  - ubo2014original_wallpaper03
+  - ubo2014original_wallpaper04
+  - ubo2014original_wallpaper05
+  - ubo2014original_wallpaper06
+  - ubo2014original_wallpaper07
+  - ubo2014original_wallpaper08
+  - ubo2014original_wallpaper09
+  - ubo2014original_wallpaper10
+  - ubo2014original_wallpaper11
+  - ubo2014original_wallpaper12
+  - ubo2014original_wallpaper13
+  - ubo2014original_wood01
+  - ubo2014original_wood02
+  - ubo2014original_wood03
+  - ubo2014original_wood04
+  - ubo2014original_wood05
+  - ubo2014original_wood06
+  - ubo2014original_wood07
+  - ubo2014original_wood08
+  - ubo2014original_wood09
+  - ubo2014original_wood10
+  - ubo2014original_wood11
+  - ubo2014original_wood12
+  - ubo2014original_wood13
+
+network: Decoder
+decom: DualBiPlane
+adapter: null
+offset: null
+normalmap: null
+reactivate_trainable_layers: false
+query_size: 2
+greyscale: false
+latent_size: [6, 6, 6]
+decom_H_reso: 20
+num_workers: 8
+
+trainer: Trainer
+batch_size: 4
+random_drop_queries: null
+use_hxy_comb: false
+lr: [0.001, 0.0003, 0, 0, 0, 0]
+lr_decay_param: 0.9
+lr_decay_epoch: 1
+start_radius: 0
+radius_decay: 0
+max_epochs: 80
+validate_epoch: 5
+change_parameters_epoch: null
+
+save_root: /lizixuan/Biplane/torch/saved_model
+log_file: true
+save_model: true
+compress_only: false
+continue_training: true
+checkpoint_path: /lizixuan/Biplane/model/decoder1207-epoch-60.pth

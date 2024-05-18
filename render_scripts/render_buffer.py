@@ -37,7 +37,7 @@ def render(
         illu = torch.ones_like(illu)
         out_path = out_path.replace('.exr', '_brdfval.exr')
     if u is not None and v is not None:
-        assert u < 1 and v < 1, "[render.py: render] uv location must be in [0, 1)"
+        assert u < 1 and v < 1, "[render_buffer.py: render] uv location must be in [0, 1)"
         uv[:, 0] = u
         uv[:, 1] = v
         out_path = out_path.replace('.exr', f'_u{u}_v{v}.exr')

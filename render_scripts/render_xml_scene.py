@@ -16,7 +16,7 @@ from lib.utils import exr
 from utils import wiwo_xyz_to_hd_thetaphi, thetaphi_to_xyz, xy_to_xyz, print, gaussian_filter
 
 '''
-    usage: render.py [-h] [--nocpu] [--nogpu] [--output OUTPUT] [--buffer_dir BUFFER_DIR] xml_path
+    usage: render_xml_scene.py [-h] [--nocpu] [--nogpu] [--output OUTPUT] [--buffer_dir BUFFER_DIR] xml_path
 '''
 
 parser = argparse.ArgumentParser()

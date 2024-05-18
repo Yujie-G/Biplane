@@ -1,0 +1,52 @@
+other_info: null
+root: /lizixuan/Biplane
+
+data_root:
+  ubo2014: /data/mitsuba-pytorch-tensorNLB/ubo2014_resampled_allrandom/
+  ubo2014original: /lizixuan/Biplane/UBO2014BTF/ubo2014_resampled_allrandom
+  neumip: data/neumip_data/
+  heightfield: data/heightfield/
+  normalmap: data/normalmap/
+  datagen: /root/autodl-tmp/data/datagen/
+  render: data/collocated_render/
+  uita: /data/mitsuba-pytorch-tensorNLB/uita_btf_database/
+  autoclose: data/collocated_auto_close/
+  default: /lizixuan/Biplane/UBO2014BTF/ubo2014_resampled_allrandom
+
+train_dataset: TrainDataset_allrandom
+btf_size: [400, 400]
+cache_file_shape: [400, 400, 400, 9]
+train_materials:
+  - ubo2014original_carpet05
+
+network: Decoder
+decom: DualBiPlane
+adapter: Adapter
+offset: null
+normalmap: null
+reactivate_trainable_layers: false
+query_size: 2
+greyscale: false
+latent_size: [6, 6, 6]
+decom_H_reso: 20
+num_workers: 8
+
+trainer: Trainer
+batch_size: 8
+random_drop_queries: 2
+start_radius: 20
+radius_decay: 0.75
+use_hxy_comb: false
+lr: [0.01, 0, 0.01, 0.01, 0.003, 0.01]
+lr_decay_param: 0.85
+max_epochs: 20
+lr_decay_epoch: 1
+change_parameters_epoch: 15
+validate_epoch: -1
+
+save_root: /lizixuan/Biplane/torch/saved_model
+log_file: true
+save_model: true
+continue_training: true
+compress_only: true
+checkpoint_path: /lizixuan/Biplane/model/decoder1207-epoch-60.pth

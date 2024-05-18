@@ -1,5 +1,5 @@
 import sys
-
+import os
 import model
 import trainer
 import dataset
@@ -8,19 +8,23 @@ from config import RepConfig
 
 def representation_main(device, global_random_seed, argv=None):
     
-    config = RepConfig(device, global_random_seed)
-
+    config = None
     test_run = False
-    if argv is not None and len(argv) > 1 and argv[1] == 'test_run':
-        config.cache_file_shape[0] = config.batch_size * 4
-        config.train_materials = config.train_materials[0:1]
-
-        config.validate_epoch = 1
-        config.change_parameters_epoch = 1
-
-        config.log_file = config.save_model = True
-        config.comments = 'TEST_RUN-' + config.comments
-        test_run = True
+    if argv is not None and len(argv) > 1 :
+        if argv[1] == 'test_run':
+            config = RepConfig(device, global_random_seed, os.path.join('lib', 'config', 'test_run.yaml'))
+            config.train_materials = config.train_materials[0:1]
+            config.comments = 'TEST_RUN-' + config.comments
+            test_run = True
+        elif argv[1] == 'compress':
+            config = RepConfig(device, global_random_seed, os.path.join('lib', 'config', 'compress.yaml'))
+        elif argv[1] == 'acquisition':
+            config = RepConfig(device, global_random_seed, os.path.join('lib', 'config', 'acquisiton.yaml'))
+        elif argv[1] == 'train':
+            config = RepConfig(device, global_random_seed, os.path.join('lib', 'config', 'train.yaml'))
+    else:
+        print('No config file specified, using default config file.')
+        exit(0)
     
     ## training
     decom = getattr(model, config.decom)(config)
@@ -34,12 +38,11 @@ def representation_main(device, global_random_seed, argv=None):
     ).train()
 
 
-def sperated_train_materials(device, global_random_seed, argv=None):
-
-    config = RepConfig(device, global_random_seed)
+def compress_materials(device, global_random_seed):
     materials = ['ubo2014original_carpet01','ubo2014original_carpet02','ubo2014original_carpet03','ubo2014original_carpet04']
     for mat in materials:
-        config.train_materials = [mat]
+        config = RepConfig(device, global_random_seed, os.path.join('lib', 'config', 'compress.yaml'))
+        config.train_materials = config.train_materials.clear().append(mat)
         ## training
         decom = getattr(model, config.decom)(config)
         network = getattr(model, config.network)(config)
@@ -63,4 +66,3 @@ if __name__ == '__main__':
 
     representation_main(device, seed, sys.argv)
 
-    # sperated_train_materials(device, seed, sys.argv)

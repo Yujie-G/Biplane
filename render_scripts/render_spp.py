@@ -5,7 +5,7 @@ import tqdm
 
 from lib.utils import exr
 import torch
-from render import render
+from render_buffer import render
 from utils import set_global_random_seed, detect_device, print
 
 if __name__ == '__main__':
